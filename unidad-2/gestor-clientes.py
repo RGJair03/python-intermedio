@@ -1,59 +1,100 @@
 from collections import Counter, OrderedDict
 
-compras = {
-    1: "Baruch",
-    2: "Jair",
-    3: "Lizbeth",
-    4: "Jonathan",
-    5: "Mariana",
-    6: "Sebastian",
-    7: "Cesar",
-    8: "Eduardo",
-    9: "Yesica",
-    10: "Holly",
-    11: "Jair",
-    12: "Lizbeth",
-    13: "Sebastian",
-    14: "Cesar",
-    15: "Lissette",
-    16: "Lissette",
-}
 
-registrados = {
-    1: "Lizbeth",
-    2: "Jonathan",
-    3: "Sebastian",
-    4: "Mariana",
-    5: "Cesar",
-    6: "Eduardo",
-    7: "Yesica",
-    8: "Fabiola",
-    9: "Holly",
-    10: "Baruch",
-}
+def obtener_nombres(compras):
+    # recorre compras y toma la clave de cada diccionario
+    return [list(c.keys())[0] for c in compras]
 
-# 1 -> Clientes nuevos
-clientes_nuevos = set(compras.values()) - set(registrados.values())
 
-# 2 -> Clientes por orden de compra
-clientes_ordenados = {}
-contador = 1
-for cliente in OrderedDict.fromkeys(compras.values()):
-    clientes_ordenados[cliente] = contador
-    contador += 1
+def clientes_nuevos(compras, registrados):
+    # Se obtiene la lista de nombres
+    nombres = obtener_nombres(compras)
+    # Se aplica la diferencia de set para ver cuales no estan en registrados
+    return set(nombres) - set(registrados.keys())
 
-# 3 -> Resumen de clientes frecuentes
-conteo = Counter(compras.values())
 
-# 4 -> Resumen de compras mayor a 1 vez
-resumen = {c: f"Ha comprado {n} veces" for c, n in conteo.items() if n > 1}
+def orden_clientes(compras):
+    orden = OrderedDict()
+    # recorre compras con indice desde 1
+    for i, compra in enumerate(compras, start=1):
+        # obtener el nombre del cliente
+        cliente = list(compra.keys())[0]
+        # si el cliente no esta en orden
+        if cliente not in orden:
+            # agrega cliente con su indice
+            orden[cliente] = i
+    return dict(orden)
 
-# === Mostrar resultados ===
-print("\nClientes nuevos no registrados:")
-print(clientes_nuevos)
 
-print("\nClientes por orden de compra:")
-print(clientes_ordenados)
+def contar_compras(compras):
+    nombres = obtener_nombres(compras)
+    # aplicamos Counter para contar ocurrencias
+    return Counter(nombres)
 
-print("\nResumen por cliente frecuente:")
-print(resumen)
+
+def resumen_compras(compras):
+    conteo = contar_compras(compras)
+    resumen = {}
+    # recorre cada cliente y su numero de compras
+    for cliente, veces in conteo.items():
+        # valida que tenga mas de una compra
+        if veces > 1:
+            clave = f"Ha comprado {veces} veces"
+            # obtiene la lista existente o crea una lista vacia
+            lista = resumen.get(clave, [])
+            # agrega el cliente a la lista
+            lista.append(cliente)
+            # guarda la lista actualizada en el diccionario
+            resumen[clave] = lista
+    return resumen
+
+
+def reporte(compras, registrados):
+    print("\n=== Reporte de Clientes ===")
+    print("\nClientes nuevos no registrados:")
+    print(clientes_nuevos(compras, registrados))
+    print("\nDiccionario de clientes unicos (orden numerico):")
+    print(orden_clientes(compras))
+    print("\nResumen por cliente frecuente (solo mas de una compra):")
+    print(resumen_compras(compras))
+
+
+def main():
+
+    # lista de compras con clientes e ID del producto que adquirieron
+    compras = [
+        {"Cesar": 1},
+        {"Lizbeth": 3},
+        {"Mariana": 1},
+        {"Holly": 1},
+        {"Holly": 1},
+        {"Yesica": 1},
+        {"Jair": 2},
+        {"Cesar": 1},
+        {"Lizbeth": 2},
+        {"Jair": 3},
+        {"Yesica": 3},
+        {"Cesar": 1},
+        {"Lissette": 1},
+        {"Carlos": 2},
+        {"Lizbeth": 2},
+        {"Luis": 1},
+        {"Luis": 2},
+        {"Luis": 3},
+    ]
+
+    # clientes registrados
+    registrados = {
+        "Lizbeth": "registrado",
+        "Cesar": "registrado",
+        "Baruch": "registrado",
+        "Jonathan": "registrado",
+        "Mariana": "registrado",
+        "Eduardo": "registrado",
+        "Holly": "registrado",
+    }
+
+    reporte(compras, registrados)
+
+
+main()
