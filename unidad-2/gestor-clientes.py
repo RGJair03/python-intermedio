@@ -33,19 +33,25 @@ def contar_compras(compras):
 
 
 def resumen_compras(compras):
+
+    # se obtiene el conteo de compras por cliente
     conteo = contar_compras(compras)
+
     resumen = {}
-    # recorre cada cliente y su numero de compras
+
+    # recorre cada cliente y el numero de veces que aparece en el conteo
     for cliente, veces in conteo.items():
-        # valida que tenga mas de una compra
+
+        # valida que el cliente tenga mas de una compra
         if veces > 1:
             clave = f"Ha comprado {veces} veces"
-            # obtiene la lista existente o crea una lista vacia
-            lista = resumen.get(clave, [])
-            # agrega el cliente a la lista
-            lista.append(cliente)
-            # guarda la lista actualizada en el diccionario
-            resumen[clave] = lista
+
+            # si la clave no existe en el diccionario, se inicializa con lista vacia
+            if clave not in resumen:
+                resumen[clave] = []
+
+            # agrega el cliente a la lista correspondiente a esa clave
+            resumen[clave].append(cliente)
     return resumen
 
 
